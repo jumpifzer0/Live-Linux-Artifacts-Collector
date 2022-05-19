@@ -20,6 +20,8 @@ PERS_FILE="Persistance.txt"
 
 DELIM="${NC}=========="
 
+CURR_DIR=$(pwd)
+
 banner()
 {
   echo "+------------------------------------------+"
@@ -33,7 +35,6 @@ do_logging()
   THE_TIME=$(date +"%T")
   echo "[${THE_TIME}] - $1" | tee -a $2
 }
-
 #################
 
 #Check if run as root/sudo
@@ -53,7 +54,10 @@ echo "|		Written by: ${BLUE}jumpifzer0${NC}			|"
 echo "|							|"
 echo "+-------------------------------------------------------+"
 
+printf "All Artifacts will be stored in `tput bold` ${CURR_DIR} `tput sgr0` \n"
+
 echo "Starting collection of artifacts"
+
 
 banner "Miscellaneous"
 
@@ -118,23 +122,79 @@ echo "${GREEN}${TEMP}${NC}" | sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//
 echo "" | tee -a ${MISC_FILE}
 
 
-
 banner "Accounts"
+
+do_logging "User Accounts" "${ACC_FILE}"
+TEMP=$(cat /etc/passwd)
+echo "${GREEN}${TEMP}${NC}"
+echo "${GREEN}${TEMP}${NC}" | sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g" >> ${ACC_FILE}
+echo "" | tee -a ${ACC_FILE}
+
+do_logging "Current Logged On" "${ACC_FILE}"
+TEMP=$(w)
+echo "${GREEN}${TEMP}${NC}"
+echo "${GREEN}${TEMP}${NC}" | sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g" >> ${ACC_FILE}
+echo "" | tee -a ${ACC_FILE}
+
+do_logging "Groups" "${ACC_FILE}"
+TEMP=$(cat /etc/group)
+echo "${GREEN}${TEMP}${NC}"
+echo "${GREEN}${TEMP}${NC}" | sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g" >> ${ACC_FILE}
+echo "" | tee -a ${ACC_FILE}
+
+do_logging "UID/GID 0" "${ACC_FILE}"
+TEMP=$(cat /etc/passwd | grep ":0:")
+echo "${GREEN}${TEMP}${NC}"
+echo "${GREEN}${TEMP}${NC}" | sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g" >> ${ACC_FILE}
+echo "" | tee -a ${ACC_FILE}
+
+do_logging "Sudoers" "${ACC_FILE}"
+TEMP=$(cat /etc/sudoers)
+echo "${GREEN}${TEMP}${NC}"
+echo "${GREEN}${TEMP}${NC}" | sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g" >> ${ACC_FILE}
+echo "" | tee -a ${ACC_FILE}
 
 
 banner "Logs"
 
+do_logging "Known Common Logs" "${LOG_FILE}"
+cp /var/log ${CURR_DIR}/logs
+echo "Saving all logs from /var/log to ${LIGHT_CYAN}${CURR_DIR}/logs${NC}" | tee -a ${LOG_FILE}
+echo "" | tee -a ${LOG_FILE}
+
 
 banner "Services"
+
+do_logging "All Running Processes" "${SERV_FILE}"
+TEMP=$(ps -aux)
+echo "${GREEN}${TEMP}${NC}"
+echo "${GREEN}${TEMP}${NC}" | sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g" >> ${SERV_FILE}
+echo "" | tee -a ${SERV_FILE}
+
+do_logging "Open Ports" "${SERV_FILE}"
+TEMP=$(netstat -ltup)
+echo "${GREEN}${TEMP}${NC}"
+echo "${GREEN}${TEMP}${NC}" | sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g" >> ${SERV_FILE}
+echo "" | tee -a ${SERV_FILE}
 
 
 banner "Persistence"
 
-echo "${DELIM}"
-echo "${RED}Sample Text"
-echo "${GREEN}Sample Text"
-echo "${YELLOW}Sample Text"
-echo "${BLUE}Sample Text"
-echo "${LIGHT_MAGENTA}Sample Text"
-echo "${LIGHT_CYAN}Sample Text"
-echo "${DELIM}"
+do_logging "All Crontabs" "${PERS_FILE}"
+TEMP=$(for user in $(cut -f1 -d: /etc/passwd); do crontab -u $user -l; done)
+echo "Listing all crontabs for all users"
+echo "${GREEN}${TEMP}${NC}"
+echo "${GREEN}${TEMP}${NC}" | sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g" >> ${PERS_FILE}
+echo "" | tee -a ${PERS_FILE}
+
+do_logging "Run-Control" "${PERS_FILE}"
+TEMP=$(cat /etc/rc.local)
+echo "${GREEN}${TEMP}${NC}"
+echo "${GREEN}${TEMP}${NC}" | sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g" >> ${PERS_FILE}
+echo "" | tee -a ${PERS_FILE}
+
+echo "End of Script"
+THE_TIME=$(date +"%T")
+echo "Time End: ${THE_TIME}"
+
+
