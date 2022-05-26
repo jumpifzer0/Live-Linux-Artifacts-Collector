@@ -158,7 +158,7 @@ echo "" | tee -a ${ACC_FILE}
 banner "Logs"
 
 do_logging "Known Common Logs" "${LOG_FILE}"
-cp /var/log ${CURR_DIR}/logs
+cp -r /var/log ${CURR_DIR}/logs
 echo "Saving all logs from /var/log to ${LIGHT_CYAN}${CURR_DIR}/logs${NC}" | tee -a ${LOG_FILE}
 echo "" | tee -a ${LOG_FILE}
 
