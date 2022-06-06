@@ -44,6 +44,7 @@ then
 	exit
 fi
 
+START_TIME=$(date +"%T")
 echo "Proof of concept tool to obtain forensics artifacts from a live linux machine"
 
 # Prints Banner
@@ -195,6 +196,7 @@ echo "" | tee -a ${PERS_FILE}
 
 echo "End of Script"
 THE_TIME=$(date +"%T")
+echo "Time Start: ${START_TIME}"
 echo "Time End: ${THE_TIME}"
 
 
